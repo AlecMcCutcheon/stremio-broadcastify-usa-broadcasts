@@ -106,7 +106,7 @@ builder.defineCatalogHandler(async (args) => {
 
         const catalogItems = states.map(async state => {
             const stateNameWithUnderscores = state.replace(/ /g, '_');
-            const posterUrl = `https://raw.githubusercontent.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts/0a4861afdef8e6c46cf9ead134d7fbc5547dbee5/flags/Flag_of_${stateNameWithUnderscores}.svg`;
+            const posterUrl = `https://raw.githubusercontent.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts/dfb56172d53c1bd4fd610508e80d6324a7077e65/flags/Flag_of_${stateNameWithUnderscores}.svg`;
 
             return {
                 id: `broadcastify_states_${state}`,
@@ -129,7 +129,7 @@ builder.defineMetaHandler((args) => {
         try {
             const state = args.id.replace('broadcastify_states_', '');
             const stateNameWithUnderscores = state.replace(/ /g, '_');
-            const posterUrl = `https://raw.githubusercontent.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts/0a4861afdef8e6c46cf9ead134d7fbc5547dbee5/flags/Flag_of_${stateNameWithUnderscores}.svg`;
+            const posterUrl = `https://raw.githubusercontent.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts/dfb56172d53c1bd4fd610508e80d6324a7077e65/flags/Flag_of_${stateNameWithUnderscores}.svg`;
 
             const meta = {
                 id: args.id,
