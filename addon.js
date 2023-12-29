@@ -2,7 +2,6 @@ const fetch = require('node-fetch');
 const { JSDOM } = require('jsdom');
 const { addonBuilder } = require('stremio-addon-sdk');
 
-
 const getStates = () => [
     "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
     "Delaware", "District of Columbia", "Florida", "Georgia", "Hawaii", "Idaho",
@@ -17,6 +16,7 @@ const getStates = () => [
 const manifest = {
     id: "com.mixtape.broadcastify",
     version: "1.0.2",
+    logo: "https://images-na.ssl-images-amazon.com/images/I/61PnWzD2ueL.png",
     name: "Broadcastify USA Broadcasts",
     description: "Stremio Add-On to listen to public safety broadcasts from different US States on Broadcastify",
     types: ["radio"],
@@ -25,13 +25,12 @@ const manifest = {
             type: "radio",
             id: "broadcastify_usa_broadcasts",
             name: "Broadcastify USA Broadcasts",
-            extra: [{ genres: getStates() }]  // <-- Corrected this line
+            extra: [{ genres: getStates() }]
         }
     ],
-    resources: ["catalog", "stream"],
+    resources: ["catalog", "stream", "meta"],
     idPrefixes: ["broadcastify_states"]
 };
-
 
 const builder = new addonBuilder(manifest);
 
@@ -53,7 +52,6 @@ const replaceSTID = (state) => {
 
     return stidMap[state] || null;
 };
-
 
 const fetchDataFromBroadcastify = async (state) => {
     try {
@@ -102,73 +100,19 @@ const fetchDataFromBroadcastify = async (state) => {
     }
 };
 
-
 builder.defineCatalogHandler(async (args) => {
     try {
         const states = getStates();
-        const stateAbbreviations = {
-			"Alabama": "AL", 
-			"Alaska": "AK", 
-			"Arizona": "AZ", 
-			"Arkansas": "AR", 
-			"California": "CA", 
-			"Colorado": "CO", 
-			"Connecticut": "CT",
-			"Delaware": "DE", 
-			"District of Columbia": "DC", 
-			"Florida": "FL", 
-			"Georgia": "GA", 
-			"Hawaii": "HI", 
-			"Idaho": "ID",
-			"Illinois": "IL", 
-			"Indiana": "IN", 
-			"Iowa": "IA", 
-			"Kansas": "KS", 
-			"Kentucky": "KY", 
-			"Louisiana": "LA", 
-			"Maine": "ME", 
-			"Maryland": "MD",
-			"Massachusetts": "MA", 
-			"Michigan": "MI", 
-			"Minnesota": "MN", 
-			"Mississippi": "MS", 
-			"Missouri": "MO", 
-			"Montana": "MT", 
-			"Nebraska": "NE",
-			"Nevada": "NV", 
-			"New Hampshire": "NH", 
-			"New Jersey": "NJ", 
-			"New Mexico": "NM", 
-			"New York": "NY", 
-			"North Carolina": "NC",
-			"North Dakota": "ND", 
-			"Ohio": "OH", 
-			"Oklahoma": "OK", 
-			"Oregon": "OR", 
-			"Pennsylvania": "PA", 
-			"Rhode Island": "RI",
-			"South Carolina": "SC", 
-			"South Dakota": "SD", 
-			"Tennessee": "TN", 
-			"Texas": "TX", 
-			"Utah": "UT", 
-			"Vermont": "VT", 
-			"Virginia": "VA", 
-			"Washington": "WA", 
-			"West Virginia": "WV", 
-			"Wisconsin": "WI", 
-			"Wyoming": "WY"
-		};
 
         const catalogItems = states.map(async state => {
-            const abbreviation = stateAbbreviations[state];
-            const posterUrl = `https://raw.githubusercontent.com/coryetzkorn/state-svg-defs/5e5141e6117c793abf1892d0e4c8a4ebb76b032a/SVG/${abbreviation}.svg`;
+            const stateNameWithUnderscores = state.replace(/ /g, '_');
+            const posterUrl = `https://raw.githubusercontent.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts/0a4861afdef8e6c46cf9ead134d7fbc5547dbee5/flags/Flag_of_${stateNameWithUnderscores}.svg`;
 
             return {
                 id: `broadcastify_states_${state}`,
                 type: "radio",
                 name: state,
-                genres: ["Public Safety"], // Set the genre for all states to "Public Safety"
+                genres: ["Public Safety"],
                 poster: posterUrl,
             };
         });
@@ -178,6 +122,31 @@ builder.defineCatalogHandler(async (args) => {
         console.error('Error in defineCatalogHandler:', error.message);
         throw error;
     }
+});
+
+builder.defineMetaHandler((args) => {
+    return new Promise((resolve, reject) => {
+        try {
+            const state = args.id.replace('broadcastify_states_', '');
+            const stateNameWithUnderscores = state.replace(/ /g, '_');
+            const posterUrl = `https://raw.githubusercontent.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts/0a4861afdef8e6c46cf9ead134d7fbc5547dbee5/flags/Flag_of_${stateNameWithUnderscores}.svg`;
+
+            const meta = {
+                id: args.id,
+                type: "radio",
+                name: state,
+                genres: ["Public Safety"],
+                poster: posterUrl,
+                background: posterUrl,
+                posterShape: "square",
+            };
+
+            resolve({ meta });
+        } catch (error) {
+            console.error("Error in defineMetaHandler:", error);
+            reject(error);
+        }
+    });
 });
 
 builder.defineStreamHandler(async (args) => {
@@ -210,7 +179,5 @@ builder.defineStreamHandler(async (args) => {
         throw error;
     }
 });
-
-
 
 module.exports = builder.getInterface();
