@@ -15,7 +15,7 @@ const getStates = () => [
 
 const manifest = {
     id: "com.mixtape.broadcastify",
-    version: "1.0.2",
+    version: "1.0.3",
     logo: "https://images-na.ssl-images-amazon.com/images/I/61PnWzD2ueL.png",
     name: "Broadcastify USA Broadcasts",
     description: "Stremio Add-On to listen to public safety broadcasts from different US States on Broadcastify",
