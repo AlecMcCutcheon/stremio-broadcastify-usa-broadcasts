@@ -1,0 +1,33 @@
+{
+  "name": "Broadcastify USA Broadcasts",
+  "version": "1.0.2",
+  "description": "Stremio Add-On to listen to public safety broadcasts from different US States on Broadcastify",
+  "main": "addon.js",
+  "scripts": {
+    "test": "node test/*",
+    "start": "node server.js"
+  },
+    "repository": {
+    "type": "git",
+    "url": "https://github.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts"
+  },
+    "keywords": [
+    "Broadcastify",
+    "stremio-radio",
+    "radio",
+	"Broadcasts"
+  ],
+  "author": "AlecMcCutcheon",
+  "license": "MIT",
+    "bugs": {
+    "url": "https://github.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts/issues"
+  },
+  "homepage": "https://github.com/AlecMcCutcheon/stremio-broadcastify-usa-broadcasts",
+  "dependencies": {
+    "express": "^4.18.2",
+    "jsdom": "^17.0.0",
+    "node-fetch": "^2.7.0",
+    "stremio-addon-sdk": "^1.6.10"
+  }
+}
+ 

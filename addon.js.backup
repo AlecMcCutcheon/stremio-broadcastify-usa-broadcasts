@@ -1,0 +1,124 @@
+const express = require('express');
+const fetch = require('node-fetch');
+const { JSDOM } = require('jsdom');
+
+const app = express();
+const port = 3000;
+
+// Function to replace STID in URL based on the state
+function replaceSTID(state) {
+  const stidMap = {
+    "Alabama": "1",
+    "Alaska": "2",
+    "Arizona": "4",
+    "Arkansas": "5",
+    "California": "6",
+    "Colorado": "8",
+    "Connecticut": "9",
+    "Delaware": "10",
+    "District of Columbia": "11",
+    "Florida": "12",
+    "Georgia": "13",
+    "Guam": "66",
+    "Hawaii": "15",
+    "Idaho": "16",
+    "Illinois": "17",
+    "Indiana": "18",
+    "Iowa": "19",
+    "Kansas": "20",
+    "Kentucky": "21",
+    "Louisiana": "22",
+    "Maine": "23",
+    "Maryland": "24",
+    "Massachusetts": "25",
+    "Michigan": "26",
+    "Minnesota": "27",
+    "Mississippi": "28",
+    "Missouri": "29",
+    "Montana": "30",
+    "Nebraska": "31",
+    "Nevada": "32",
+    "New Hampshire": "33",
+    "New Jersey": "34",
+    "New Mexico": "35",
+    "New York": "36",
+    "North Carolina": "37",
+    "North Dakota": "38",
+    "Ohio": "39",
+    "Oklahoma": "40",
+    "Oregon": "41",
+    "Pennsylvania": "42",
+    "Puerto Rico": "72",
+    "Rhode Island": "44",
+    "South Carolina": "45",
+    "South Dakota": "46",
+    "Tennessee": "47",
+    "Texas": "48",
+    "Utah": "49",
+    "Vermont": "50",
+    "Virgin Islands": "78",
+    "Virginia": "51",
+    "Washington": "53",
+    "West Virginia": "54",
+    "Wisconsin": "55",
+    "Wyoming": "56"
+  };
+
+  return stidMap[state] || null;
+}
+
+app.get('/:state', async (req, res) => {
+  try {
+    // Extract state from the URL
+    const state = req.params.state;
+
+    // Replace STID in URL
+    const stid = replaceSTID(state);
+    if (!stid) {
+      return res.status(400).json({ error: 'Invalid state' });
+    }
+
+    const response = await fetch(`https://www.broadcastify.com/listen/stid/${stid}/publicsafety`);
+    const html = await response.text();
+    const dom = new JSDOM(html);
+
+    const table = dom.window.document.querySelector('.btable');
+    const rows = table.querySelectorAll('tr');
+
+    const data = {};
+
+    for (let i = 1; i < rows.length; i++) {
+      const columns = rows[i].querySelectorAll('td');
+      const county = columns[0].textContent.trim();
+      const feed = columns[1].textContent.trim();
+      const genre = columns[2].textContent.trim();
+      const listeners = parseInt(columns[3].textContent.trim(), 10);
+      const links = columns[4].querySelector('a').getAttribute('href');
+      const status = columns[5].textContent.trim();
+
+      if (status === 'Online' && genre === 'Public Safety') {
+        if (!data[county]) {
+          data[county] = [];
+        }
+
+        data[county].push({
+          feed,
+          genre,
+          listeners,
+          links: `https://broadcastify.cdnstream1.com/${links.split('/').pop()}`,
+          status,
+        });
+      }
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error:', error.message);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server is running at http://localhost:${port}`);
+});
+
