@@ -15,7 +15,7 @@ const getStates = () => [
 
 const manifest = {
     id: "com.mixtape.broadcastify",
-    version: "1.0.3",
+    version: "1.0.4",
     logo: "https://images-na.ssl-images-amazon.com/images/I/61PnWzD2ueL.png",
     name: "Broadcastify USA Broadcasts",
     description: "Stremio Add-On to listen to public safety broadcasts from different US States on Broadcastify",
@@ -165,7 +165,7 @@ builder.defineStreamHandler(async (args) => {
             data[county].forEach(feed => {
                 const streamEntry = {
                     id: `broadcastify_states_${state}_${county}_${feed.feed.replace(/ /g, '_')}`,
-                    title: `Listen to ${county} | ${feed.feed} - ${feed.listeners} listeners`,
+                    title: `${county} | ${feed.feed} | ${feed.listeners} listeners`,
                     url: feed.links,
                 };
 

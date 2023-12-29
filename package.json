@@ -1,6 +1,6 @@
 {
   "name": "Broadcastify USA Broadcasts",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Stremio Add-On to listen to public safety broadcasts from different US States on Broadcastify",
   "main": "addon.js",
   "scripts": {
